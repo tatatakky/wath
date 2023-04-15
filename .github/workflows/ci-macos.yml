@@ -1,0 +1,38 @@
+name: WATH CI on MacOS
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ macos-12 ]
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install wasi-sdk-20.0
+      run: |
+        cd $HOME
+        sudo curl https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-20/wasi-sdk-20.0-macos.tar.gz -L | tar zx
+        echo "$HOME/wasi-sdk-20.0/bin" >> $GITHUB_PATH
+    - name: Install wasmer
+      run: |
+        cd $HOME
+        curl https://get.wasmer.io -sSfL | sh
+        echo "$HOME/.wasmer/bin" >> $GITHUB_PATH
+
+    - name: Check Version
+      run: make check
+    - name: Make WATH wasm (using clang and wasm-ld of wasi-sdk)
+      run: make
+    - name: Test WATH wasm (using wasmer)
+      run: make test
+    - name: Clean
+      run: make clean
