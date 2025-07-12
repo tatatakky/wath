@@ -7,6 +7,8 @@ else ifeq ($(shell uname), Darwin)
 else
 endif
 
+WASI_CLANG_VERSION = $(shell $(WASI_SDK_PATH)/bin/clang --version | grep -oE 'clang version [0-9]+' | cut -d ' ' -f3)
+
 LDFLAGS := -strip-all -gc-sections
 LDFLAGS += --no-entry --export-all -allow-undefined
 LDFLAGS += -export=__wasm_call_ctors -export=malloc -export=free -export=main
@@ -23,7 +25,7 @@ all: build
 build: $(OBJ_FILE)
 	$(WASI_SDK_PATH)/bin/wasm-ld \
 		$(LDFLAGS) $(OBJ_FILE) \
-		$(WASI_SDK_PATH)/lib/clang/16/lib/wasi/libclang_rt.builtins-wasm32.a \
+		$(WASI_SDK_PATH)/lib/clang/$(WASI_CLANG_VERSION)/lib/wasi/libclang_rt.builtins-wasm32.a \
 		$(WASI_SDK_PATH)/share/wasi-sysroot/lib/wasm32-wasi/libc.a \
 		-o $(TARGET_WASM)
 
