@@ -20,3 +20,6 @@ You also can do test with `wasmer` directly, like the following.
 ```
 $ wasmer run wath.wasm --dir=. --invoke wath_exp 2.0
 ```
+
+## Sample
+・https://github.com/tatatakky/wath-sample
